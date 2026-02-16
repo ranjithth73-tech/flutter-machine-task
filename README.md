@@ -1,6 +1,6 @@
-# Smart Task Manager 🚀
+# Smart Task Manager (Release Mode) 🚀
 
-Flutter application built with Clean Architecture, following best practices for state management, offline support, and API integration.
+A production-ready Flutter application built with Clean Architecture, following best practices for state management, offline support, and API integration. This project is fully optimized and verified in **Release Mode**.
 
 ## ✨ Key Features
 - **Task Management**: CRUD operations with REST API integration.
@@ -18,6 +18,12 @@ Flutter application built with Clean Architecture, following best practices for 
 - **Backend Services**: Firebase Auth & Firestore (Profile), Custom REST API (Tasks)
 - **Architecture**: Clean Architecture (Data, Domain, Presentation layers)
 
+## 📦 Production Release
+The application has been built and verified in release mode.
+- **Release APK**: `build/app/outputs/flutter-apk/app-release.apk`
+- **Optimization**: All debug flags (like `debugShowCheckedModeBanner`) are disabled for the best performance.
+- **Pure Dart Focus**: The project has been cleaned of non-essential platform code (Swift, C++, etc.) to maintain a pure Dart/Flutter logic base.
+
 ## 🚀 Getting Started
 1. **Clone the repository**:
    ```bash
@@ -27,11 +33,7 @@ Flutter application built with Clean Architecture, following best practices for 
    ```bash
    flutter pub get
    ```
-3. **Run the app**:
+3. **Run in Release Mode**:
    ```bash
-   flutter run
+   flutter run --release
    ```
-
-## 📦 Release Build
-The production-ready APK is located at:
-`build/app/outputs/flutter-apk/app-release.apk`
