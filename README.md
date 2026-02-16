@@ -1,6 +1,6 @@
 # Smart Task Manager 🚀
 
-A production-ready Flutter application built with Clean Architecture, following best practices for state management, offline support, and API integration.
+Flutter application built with Clean Architecture, following best practices for state management, offline support, and API integration.
 
 ## ✨ Key Features
 - **Task Management**: CRUD operations with REST API integration.
