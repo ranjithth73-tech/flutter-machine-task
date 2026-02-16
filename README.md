@@ -1,17 +1,37 @@
-# smart_task_manager
+# Smart Task Manager 🚀
 
-A new Flutter project.
+A production-ready Flutter application built with Clean Architecture, following best practices for state management, offline support, and API integration.
 
-## Getting Started
+## ✨ Key Features
+- **Task Management**: CRUD operations with REST API integration.
+- **Infinite Scrolling**: Smooth pagination for large task lists.
+- **Offline First**: Local caching with Hive for offline accessibility.
+- **Authentication**: Secure Firebase Auth integration.
+- **Profile & Settings**: User profile management and theme customization (Light/Dark mode).
+- **Material 3 Design**: Modern, premium UI/UX.
 
-This project is a starting point for a Flutter application.
+## 🛠️ Tech Stack
+- **Framework**: [Flutter](https://flutter.dev)
+- **State Management**: [Riverpod](https://riverpod.dev)
+- **Local Database**: [Hive](https://pub.dev/packages/hive)
+- **Networking**: [Dio](https://pub.dev/packages/dio)
+- **Backend Services**: Firebase Auth & Firestore (Profile), Custom REST API (Tasks)
+- **Architecture**: Clean Architecture (Data, Domain, Presentation layers)
 
-A few resources to get you started if this is your first Flutter project:
+## 🚀 Getting Started
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/ranjithth73-tech/flutter-machine-task.git
+   ```
+2. **Install dependencies**:
+   ```bash
+   flutter pub get
+   ```
+3. **Run the app**:
+   ```bash
+   flutter run
+   ```
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 📦 Release Build
+The production-ready APK is located at:
+`build/app/outputs/flutter-apk/app-release.apk`
