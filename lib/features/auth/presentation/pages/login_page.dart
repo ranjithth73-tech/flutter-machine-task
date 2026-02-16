@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_task_manager/features/auth/presentation/providers/auth_provider.dart';
 import 'package:smart_task_manager/features/auth/presentation/pages/register_page.dart';
 import 'package:smart_task_manager/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:smart_task_manager/core/utils/snackbar_utils.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -36,9 +37,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   Widget build(BuildContext context) {
     ref.listen(authProvider, (previous, next) {
       if (next.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!)),
-        );
+        SnackbarUtils.showError(context, next.error!);
       }
       // Success navigation will be handled by authStateChanges wrapper
     });

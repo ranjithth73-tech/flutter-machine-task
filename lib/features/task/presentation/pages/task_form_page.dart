@@ -4,6 +4,7 @@ import 'package:smart_task_manager/features/task/domain/entities/task_entity.dar
 import 'package:smart_task_manager/features/task/presentation/providers/task_provider.dart';
 import 'package:smart_task_manager/features/auth/presentation/widgets/custom_text_field.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_task_manager/core/utils/snackbar_utils.dart';
 
 class TaskFormPage extends ConsumerStatefulWidget {
   final TaskEntity? task;
@@ -17,7 +18,7 @@ class TaskFormPage extends ConsumerStatefulWidget {
 class _TaskFormPageState extends ConsumerState<TaskFormPage> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _categoryController = TextEditingController();
+  String _category = 'Work';
   String _priority = 'Low';
   DateTime _dueDate = DateTime.now();
   final _formKey = GlobalKey<FormState>();
@@ -28,8 +29,8 @@ class _TaskFormPageState extends ConsumerState<TaskFormPage> {
     if (widget.task != null) {
       _titleController.text = widget.task!.title;
       _descriptionController.text = widget.task!.description;
-      _categoryController.text = widget.task!.category;
-      _priority = widget.task!.priority;
+      _category = _capitalize(widget.task!.category);
+      _priority = _capitalize(widget.task!.priority);
       _dueDate = widget.task!.dueDate;
     }
   }
@@ -38,15 +39,19 @@ class _TaskFormPageState extends ConsumerState<TaskFormPage> {
   void dispose() {
     _titleController.dispose();
     _descriptionController.dispose();
-    _categoryController.dispose();
     super.dispose();
+  }
+
+  String _capitalize(String s) {
+    if (s.isEmpty) return s;
+    return s[0].toUpperCase() + s.substring(1).toLowerCase();
   }
 
   Future<void> _selectDate() async {
     final pickedDate = await showDatePicker(
       context: context,
       initialDate: _dueDate,
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
+      firstDate: DateTime.now().subtract(const Duration(days: 1)),
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
     );
     if (pickedDate != null) {
@@ -56,15 +61,15 @@ class _TaskFormPageState extends ConsumerState<TaskFormPage> {
     }
   }
 
-  void _saveTask() {
+  Future<void> _saveTask() async {
     if (_formKey.currentState!.validate()) {
       if (widget.task == null) {
         // Create
-        ref.read(taskProvider.notifier).addTask(
+        await ref.read(taskProvider.notifier).addTask(
               _titleController.text,
               _descriptionController.text,
               _priority,
-              _categoryController.text.isEmpty ? 'General' : _categoryController.text,
+              _category,
               _dueDate,
             );
       } else {
@@ -73,12 +78,24 @@ class _TaskFormPageState extends ConsumerState<TaskFormPage> {
           title: _titleController.text,
           description: _descriptionController.text,
           priority: _priority,
-          category: _categoryController.text,
+          category: _category,
           dueDate: _dueDate,
         );
-        ref.read(taskProvider.notifier).updateTask(updatedTask);
+        await ref.read(taskProvider.notifier).updateTask(updatedTask);
       }
-      Navigator.of(context).pop();
+
+      if (mounted) {
+        final error = ref.read(taskProvider).error;
+        if (error != null) {
+          SnackbarUtils.showError(context, error);
+        } else {
+          SnackbarUtils.showSuccess(
+            context,
+            widget.task == null ? 'Task created successfully' : 'Task updated successfully',
+          );
+          Navigator.of(context).pop();
+        }
+      }
     }
   }
 
@@ -109,10 +126,20 @@ class _TaskFormPageState extends ConsumerState<TaskFormPage> {
                 validator: (value) => value!.isEmpty ? 'Please enter a description' : null,
               ),
               const SizedBox(height: 16),
-              CustomTextField(
-                controller: _categoryController,
-                label: 'Category',
-                hint: 'e.g., Work, Personal',
+              DropdownButtonFormField<String>(
+                value: _category,
+                decoration: const InputDecoration(
+                  labelText: 'Category',
+                  border: OutlineInputBorder(),
+                ),
+                items: ['Work', 'Personal', 'Health', 'Finance', 'Education', 'Shopping', 'Travel', 'Others']
+                    .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                    .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _category = value!;
+                  });
+                },
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(

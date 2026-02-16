@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_task_manager/features/auth/presentation/providers/auth_provider.dart';
 import 'package:smart_task_manager/features/auth/presentation/widgets/custom_text_field.dart';
+import 'package:smart_task_manager/core/utils/snackbar_utils.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
@@ -37,11 +38,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   Widget build(BuildContext context) {
     ref.listen(authProvider, (previous, next) {
       if (next.error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(next.error!)),
-        );
-      }
-      if (next.user != null) {
+        SnackbarUtils.showError(context, next.error!);
+      } else if (next.user != null) {
+        SnackbarUtils.showSuccess(context, 'User created successfully');
         // Registration successful, navigate or let authStateChanges handle it
         Navigator.of(context).pop(); // Go back to login or let main wrapper handle
       }

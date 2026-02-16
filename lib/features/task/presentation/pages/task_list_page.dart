@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smart_task_manager/features/profile/presentation/pages/profile_page.dart';
 import 'package:smart_task_manager/features/task/presentation/pages/task_form_page.dart';
 import 'package:smart_task_manager/features/task/presentation/providers/task_provider.dart';
+import 'package:smart_task_manager/core/utils/snackbar_utils.dart';
 import 'package:smart_task_manager/features/task/presentation/widgets/empty_state.dart';
 import 'package:smart_task_manager/features/task/presentation/widgets/offline_banner.dart';
 import 'package:smart_task_manager/features/task/presentation/widgets/task_card.dart';
@@ -17,6 +19,7 @@ class TaskListPage extends ConsumerStatefulWidget {
 class _TaskListPageState extends ConsumerState<TaskListPage> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
 
   @override
   void initState() {
@@ -33,6 +36,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
   void dispose() {
     _scrollController.dispose();
     _searchController.dispose();
+    _debounce?.cancel();
     super.dispose();
   }
 
@@ -40,6 +44,13 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
       ref.read(taskProvider.notifier).fetchTasks();
     }
+  }
+
+  void _onSearchChanged(String query) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      ref.read(taskProvider.notifier).setSearchQuery(query);
+    });
   }
 
   @override
@@ -77,9 +88,7 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                     border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16),
                   ),
-                  onChanged: (value) {
-                    ref.read(taskProvider.notifier).setSearchQuery(value);
-                  },
+                  onChanged: _onSearchChanged,
                 ),
                 const SizedBox(height: 16),
                 // Filters & Sort
@@ -151,7 +160,34 @@ class _TaskListPageState extends ConsumerState<TaskListPage> {
                                 );
                               },
                               onDelete: () {
-                                ref.read(taskProvider.notifier).deleteTask(task.id);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    title: const Text('Delete Task'),
+                                    content: const Text('Are you sure you want to delete this task?'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          Navigator.pop(context);
+                                          await ref.read(taskProvider.notifier).deleteTask(task.id);
+                                          if (context.mounted) {
+                                            final error = ref.read(taskProvider).error;
+                                            if (error != null) {
+                                              SnackbarUtils.showError(context, error);
+                                            } else {
+                                              SnackbarUtils.showSuccess(context, 'Task deleted successfully');
+                                            }
+                                          }
+                                        },
+                                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                      ),
+                                    ],
+                                  ),
+                                );
                               },
                               onCheckboxChanged: (value) {
                                 final updatedTask = task.copyWith(isCompleted: value ?? false);

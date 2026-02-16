@@ -52,14 +52,18 @@ class TaskModel extends TaskEntity {
 
   factory TaskModel.fromJson(Map<String, dynamic> json) {
     return TaskModel(
-      id: json['id'] ?? '',
-      title: json['title'] ?? '',
-      description: json['description'] ?? '',
-      priority: json['priority'] ?? 'low',
-      category: json['category'] ?? 'General',
-      dueDate: DateTime.tryParse(json['due_date'] ?? '') ?? DateTime.now(),
-      isCompleted: json['is_completed'] ?? false,
-      createdAt: DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      description: json['description']?.toString() ?? '',
+      priority: json['priority']?.toString() ?? 'low',
+      category: json['category']?.toString() ?? 'General',
+      dueDate: json['due_date'] != null 
+          ? DateTime.tryParse(json['due_date'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      isCompleted: json['is_completed'] == true,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+          : DateTime.now(),
     );
   }
 

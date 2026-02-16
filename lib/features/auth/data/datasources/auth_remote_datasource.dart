@@ -35,7 +35,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       return UserModel.fromFirebaseUser(userCredential.user!);
     } on FirebaseAuthException catch (e) {
-      throw AuthException(_mapFirebaseError(e.code));
+      throw AuthException(_mapFirebaseError(e.code, e.message));
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -53,7 +53,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       }
       return UserModel.fromFirebaseUser(userCredential.user!);
     } on FirebaseAuthException catch (e) {
-      throw AuthException(_mapFirebaseError(e.code));
+      throw AuthException(_mapFirebaseError(e.code, e.message));
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -78,7 +78,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     }
   }
 
-  String _mapFirebaseError(String code) {
+  String _mapFirebaseError(String code, [String? message]) {
     switch (code) {
       case 'user-not-found':
         return 'No user found for that email.';
@@ -90,8 +90,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         return 'The email address is not valid.';
       case 'weak-password':
         return 'The password provided is too weak.';
+      case 'operation-not-allowed':
+        return 'Email/password accounts are not enabled.';
+      case 'user-disabled':
+        return 'This user account has been disabled.';
+      case 'too-many-requests':
+        return 'Too many failed login attempts. Please try again later.';
+      case 'network-request-failed':
+        return 'Network error. Please check your connection.';
+      case 'invalid-credential':
+        return 'The credentials provided are invalid.';
       default:
-        return 'Authentication error: $code';
+        // If we have a message from Firebase, use it
+        if (message != null && message.isNotEmpty) {
+          return message;
+        }
+        return 'An authentication error occurred. Please try again.';
     }
   }
 }

@@ -19,7 +19,8 @@ final taskLocalDataSourceProvider = Provider<TaskLocalDataSource>((ref) {
 });
 
 final taskRemoteDataSourceProvider = Provider<TaskRemoteDataSource>((ref) {
-  return TaskRemoteDataSourceImpl(ref.read(dioClientProvider));
+  final dio = ref.watch(dioClientProvider).dio;
+  return TaskRemoteDataSourceImpl(dio);
 });
 
 final taskRepositoryProvider = Provider<TaskRepository>((ref) {
@@ -79,7 +80,8 @@ class TaskState extends Equatable {
   
   // Get filtered and sorted tasks for UI
   List<TaskEntity> get processedTasks {
-    var result = tasks;
+    // Create a mutable copy to avoid modifying unmodifiable lists
+    var result = List<TaskEntity>.from(tasks);
 
     // Filter
     if (filter == TaskFilter.completed) {

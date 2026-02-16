@@ -5,7 +5,6 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:smart_task_manager/app.dart';
 import 'package:smart_task_manager/core/utils/constants.dart';
 import 'package:smart_task_manager/features/task/data/models/task_model.dart';
-import 'package:smart_task_manager/features/task/data/models/task_model.g.dart'; // Import generated file
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
